@@ -110,7 +110,49 @@ jobs:
           docker tag openresty:alpine-fat-arm64v8 $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-fat-arm64v8 &&
           docker push $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-fat-arm64v8 ;
         fi
-
+        
+        
+     - name: build docker image for s390x flavors alpine and alpine-fat
+      stage: build
+      arch: s390x
+      script:
+      - echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin
+      - docker build -t openresty:alpine-s390x -f alpine/Dockerfile .
+      - if [[ "$TRAVIS_BRANCH" == "master" ]] ; then
+          echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin &&
+          docker tag openresty:alpine-s390x $DOCKER_ORG/openresty:alpine-s390x &&
+          docker push $DOCKER_ORG/openresty:alpine-s390x ;
+        fi
+      - if [[ "$TRAVIS_TAG" ]] ; then
+          TRAVIS_TAG_BASE=$(echo -n "$TRAVIS_TAG" | sed 's/-[0-9]$//g') ;
+          if [[ ( "$TRAVIS_TAG_BASE" ) && ( "$TRAVIS_TAG_BASE" != "$TRAVIS_TAG" ) ]] ; then
+            echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin &&
+            docker tag openresty:alpine-s390x $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-s390x &&
+            docker push $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-s390x ;
+          fi ;
+          echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin &&
+          docker tag openresty:alpine-s390x $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-s390x &&
+          docker push $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-s390x ;
+        fi
+      - echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin
+      - docker build -t openresty:alpine-fat-s390x -f alpine/Dockerfile.fat  --build-arg RESTY_IMAGE_TAG="alpine-s390x" .
+      - if [[ "$TRAVIS_BRANCH" == "master" ]] ; then
+          echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin &&
+          docker tag openresty:alpine-fat-s390x $DOCKER_ORG/openresty:alpine-fat-s390x &&
+          docker push $DOCKER_ORG/openresty:alpine-fat-s390x ;
+        fi
+      - if [[ "$TRAVIS_TAG" ]] ; then
+          TRAVIS_TAG_BASE=$(echo -n "$TRAVIS_TAG" | sed 's/-[0-9]$//g') ;
+          if [[ ( "$TRAVIS_TAG_BASE" ) && ( "$TRAVIS_TAG_BASE" != "$TRAVIS_TAG" ) ]] ; then
+            echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin &&
+            docker tag openresty:alpine-fat-s390x $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-fat-s390x &&
+            docker push $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-fat-s390x ;
+          fi ;
+          echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin &&
+          docker tag openresty:alpine-fat-s390x $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-fat-s390x &&
+          docker push $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-fat-s390x ;
+        fi
+        
     - name: build docker image for flavor alpine-apk
       stage: build
       script:
@@ -389,20 +431,20 @@ jobs:
       script:
       - export DOCKER_CLI_EXPERIMENTAL=enabled
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - docker manifest create $DOCKER_ORG/openresty:alpine --amend $DOCKER_ORG/openresty:alpine-amd64 --amend $DOCKER_ORG/openresty:alpine-arm64v8 &&
+      - docker manifest create $DOCKER_ORG/openresty:alpine --amend $DOCKER_ORG/openresty:alpine-amd64 --amend $DOCKER_ORG/openresty:alpine-arm64v8 --amend $DOCKER_ORG/openresty:alpine-s390x &&
         docker manifest push $DOCKER_ORG/openresty:alpine
-      - docker manifest create $DOCKER_ORG/openresty:alpine-fat --amend $DOCKER_ORG/openresty:alpine-fat-amd64 --amend $DOCKER_ORG/openresty:alpine-fat-arm64v8 &&
+      - docker manifest create $DOCKER_ORG/openresty:alpine-fat --amend $DOCKER_ORG/openresty:alpine-fat-amd64 --amend $DOCKER_ORG/openresty:alpine-fat-arm64v8 --amend $DOCKER_ORG/openresty:alpine-fat-s390x &&
         docker manifest push $DOCKER_ORG/openresty:alpine-fat
       - if [[ "$TRAVIS_TAG" ]] ; then
           TRAVIS_TAG_BASE=$(echo -n "$TRAVIS_TAG" | sed 's/-[0-9]$//g') ;
           if [[ ( "$TRAVIS_TAG_BASE" ) && ( "$TRAVIS_TAG_BASE" != "$TRAVIS_TAG" ) ]] ; then
-            docker manifest create $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine --amend $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-amd64 --amend $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-arm64v8 &&
+            docker manifest create $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine --amend $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-amd64 --amend $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-arm64v8 --amend $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-s390x &&
             docker manifest push $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine ;
-            docker manifest create $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-fat --amend $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-fat-amd64 --amend $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-fat-arm64v8 &&
+            docker manifest create $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-fat --amend $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-fat-amd64 --amend $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-fat-arm64v8 --amend $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-fat-s390x &&
             docker manifest push $DOCKER_ORG/openresty:$TRAVIS_TAG_BASE-alpine-fat ;
           fi ;
-          docker manifest create $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine --amend $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-amd64 --amend $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-arm64v8 &&
+          docker manifest create $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine --amend $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-amd64 --amend $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-arm64v8 --amend $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-s390x &&
           docker manifest push $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine ;
-          docker manifest create $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-fat --amend $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-fat-amd64 --amend $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-fat-arm64v8 &&
+          docker manifest create $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-fat --amend $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-fat-amd64 --amend $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-fat-arm64v8 --amend $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-fat-s390x &&
           docker manifest push $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine-fat ;
         fi
