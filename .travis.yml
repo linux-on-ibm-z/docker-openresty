@@ -112,7 +112,7 @@ jobs:
         fi
         
         
-     - name: build docker image for s390x flavors alpine and alpine-fat
+    - name: build docker image for s390x flavors alpine and alpine-fat
       stage: build
       arch: s390x
       script:
