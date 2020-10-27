@@ -16,8 +16,8 @@ The following "flavors" are available and built from [upstream OpenResty package
 
 The following "flavors" are built from source and are intended for more advanced and custom usage, caveat emptor:
 
-- [`alpine`, (*alpine/Dockerfile*)](https://github.com/openresty/docker-openresty/blob/master/alpine/Dockerfile) - AMD64 and ARM64v8
-- [`alpine-fat`, (*alpine/Dockerfile.fat*)](https://github.com/openresty/docker-openresty/blob/master/alpine/Dockerfile.fat) - AMD64 and ARM64v8
+- [`alpine`, (*alpine/Dockerfile*)](https://github.com/openresty/docker-openresty/blob/master/alpine/Dockerfile) - AMD64, ARM64v8 and s390x
+- [`alpine-fat`, (*alpine/Dockerfile.fat*)](https://github.com/openresty/docker-openresty/blob/master/alpine/Dockerfile.fat) - AMD64, ARM64v8 and s390x
 - [`bionic`, (*bionic/Dockerfile*)](https://github.com/openresty/docker-openresty/blob/master/bionic/Dockerfile)
 - [`focal`, (*focal/Dockerfile*)](https://github.com/openresty/docker-openresty/blob/master/focal/Dockerfile)
 
@@ -27,7 +27,7 @@ Starting with `1.15.8.1`, there are also `-nosse42` image flavors for systems wh
 
 It is *highly recommended* that you use the upstream-based images for best support.  For best stability, pin your images to the full tag, for example `1.17.8.1-0-bionic`.
 
-At this time, the only images that are compatible with ARM64v8 are `alpine` and `alpine-fat`.  Once there are binary packages available, they can be released with the upstream packages.
+At this time, the only images that are compatible with ARM64v8 and s390x are `alpine` and `alpine-fat`.  Once there are binary packages available, they can be released with the upstream packages.
 
 
 Table of Contents
